@@ -16,6 +16,9 @@
 
 package com.android.camera;
 
+import android.content.Context;
+import android.view.WindowManager;
+
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
@@ -38,6 +41,7 @@ import com.android.ex.camera2.portability.CameraCapabilities;
 import com.android.ex.camera2.portability.CameraSettings;
 
 import java.util.List;
+import com.android.camera.util.CameraUtil;
 
 public class VideoUI implements PreviewStatusListener {
     private static final Log.Tag TAG = new Log.Tag("VideoUI");
@@ -153,7 +157,14 @@ public class VideoUI implements PreviewStatusListener {
                 mLabelsLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
             }
         }
-        mRecordingTimeRect.setOrientation(0, animation);
+        orientation =  CameraUtil.getDisplayRotation(mActivity);
+  //      android.util.Log.w("hjc","=====setOrientationIndicator=== orientation:"+orientation+" animation:"+animation);
+        if (orientation==90)
+          orientation = 0;
+        else if (orientation==270){
+          orientation = 180;
+        }
+        mRecordingTimeRect.setOrientation(orientation, animation);
     }
 
     private void initializeMiscControls() {
@@ -266,7 +277,18 @@ public class VideoUI implements PreviewStatusListener {
      * @return The size of the available preview area.
      */
     public Point getPreviewScreenSize() {
-        return new Point(mRootView.getMeasuredWidth(), mRootView.getMeasuredHeight());
+	// when the CameraUI View is not painted finished, it's width or height will be zero , but we need a valid value, so we do these
+	//return new Point(mRootView.getMeasuredWidth(), mRootView.getMeasuredHeight());
+	if (mRootView.getMeasuredWidth() == 0 || mRootView.getMeasuredHeight() == 0) {
+		WindowManager wm = (WindowManager) mActivity.getApplicationContext()
+	                    .getSystemService(Context.WINDOW_SERVICE);
+		int width = wm.getDefaultDisplay().getWidth();
+	        int height = wm.getDefaultDisplay().getHeight();
+		 
+	    	return new Point(width, height);
+	} else {
+        	return new Point(mRootView.getMeasuredWidth(), mRootView.getMeasuredHeight());
+	}
     }
 
     public void onOrientationChanged(int orientation) {

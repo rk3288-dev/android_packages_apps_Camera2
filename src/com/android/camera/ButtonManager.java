@@ -193,7 +193,7 @@ public class ButtonManager implements SettingsManager.OnSettingChangedListener {
                                                             Keys.KEY_HDR_PLUS_FLASH_MODE);
             button = getButtonOrError(BUTTON_HDR_PLUS_FLASH);
         } else if (key.equals(Keys.KEY_CAMERA_ID)) {
-            index = mSettingsManager.getIndexOfCurrentValue(mAppController.getModuleScope(),
+            index = mSettingsManager.getIndexOfCurrentValue(SettingsManager.SCOPE_GLOBAL,
                                                             Keys.KEY_CAMERA_ID);
             button = getButtonOrError(BUTTON_CAMERA);
         } else if (key.equals(Keys.KEY_CAMERA_HDR_PLUS)) {
@@ -692,16 +692,16 @@ public class ButtonManager implements SettingsManager.OnSettingChangedListener {
             button.overrideImageIds(resIdImages);
         }
 
-        int index = mSettingsManager.getIndexOfCurrentValue(mAppController.getModuleScope(),
+        int index = mSettingsManager.getIndexOfCurrentValue(SettingsManager.SCOPE_GLOBAL,
                                                             Keys.KEY_CAMERA_ID);
         button.setState(index >= 0 ? index : 0, false);
 
         button.setOnStateChangeListener(new MultiToggleImageButton.OnStateChangeListener() {
             @Override
             public void stateChanged(View view, int state) {
-                mSettingsManager.setValueByIndex(mAppController.getModuleScope(),
+                mSettingsManager.setValueByIndex(SettingsManager.SCOPE_GLOBAL,
                                                  Keys.KEY_CAMERA_ID, state);
-                int cameraId = mSettingsManager.getInteger(mAppController.getModuleScope(),
+                int cameraId = mSettingsManager.getInteger(SettingsManager.SCOPE_GLOBAL,
                                                            Keys.KEY_CAMERA_ID);
                 // This is a quick fix for ISE in Gcam module which can be
                 // found by rapid pressing camera switch button. The assumption

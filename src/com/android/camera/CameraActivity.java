@@ -213,6 +213,7 @@ public class CameraActivity extends QuickActivity
     private FrameLayout mAboveFilmstripControlLayout;
     private FilmstripController mFilmstripController;
     private boolean mFilmstripVisible;
+    private boolean mFilmstripBottomControlsVisible = false;
     /** Whether the filmstrip fully covers the preview. */
     private boolean mFilmstripCoversPreview = false;
     private int mResultCodeForTesting;
@@ -804,11 +805,13 @@ public class CameraActivity extends QuickActivity
         mCameraAppUI.getFilmstripBottomControls().setVisible(visible);
         if (visible != mActionBar.isShowing()) {
             if (visible) {
-                mActionBar.show();
-                mCameraAppUI.showBottomControls();
+                mActionBar.show(); 
+            	   mCameraAppUI.showBottomControls();
+		   mCameraAppUI.setBottomControlsFocusable(false);
+		   mFilmstripBottomControlsVisible = false;
             } else {
                 mActionBar.hide();
-                mCameraAppUI.hideBottomControls();
+            	   mCameraAppUI.hideBottomControls();
             }
         }
         mFilmstripCoversPreview = visible;
@@ -1206,6 +1209,11 @@ public class CameraActivity extends QuickActivity
         updateStorageSpaceAndHint(null);
         ContentResolver cr = getContentResolver();
         String mimeType = cr.getType(uri);
+		Log.v(TAG,"===============NULL pointer debug===================");
+		if(mimeType == null) {
+			Log.e(TAG, "Can't find video data in content resolver:" + uri);
+			return;
+		}
         LocalData newData = null;
         if (LocalDataUtil.isMimeTypeVideo(mimeType)) {
             sendBroadcast(new Intent(CameraUtil.ACTION_NEW_VIDEO, uri));
@@ -1272,7 +1280,7 @@ public class CameraActivity extends QuickActivity
 
     private void removeData(int dataID) {
         mDataAdapter.removeData(dataID);
-        if (mDataAdapter.getTotalNumber() > 1) {
+        if (mDataAdapter.getTotalNumber() >= 1) {
             showUndoDeletionBar();
         } else {
             // If camera preview is the only view left in filmstrip,
@@ -1324,6 +1332,7 @@ public class CameraActivity extends QuickActivity
                 public void onCameraError(int errorCode) {
                     // Not a fatal error. only do Log.e().
                     Log.e(TAG, "Camera error callback. error=" + errorCode);
+                    onFatalError();
                 }
                 @Override
                 public void onCameraException(
@@ -1981,16 +1990,25 @@ public class CameraActivity extends QuickActivity
                 return true;
             }
         } else {
-            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && !mFilmstripBottomControlsVisible) {
                 mFilmstripController.goToNextItem();
                 return true;
-            } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && !mFilmstripBottomControlsVisible) {
                 boolean wentToPrevious = mFilmstripController.goToPreviousItem();
                 if (!wentToPrevious) {
                   // at beginning of filmstrip, hide and go back to preview
                   mCameraAppUI.hideFilmstrip();
+		     mFilmstripBottomControlsVisible = false;
                 }
                 return true;
+            } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+            		mCameraAppUI.setBottomControlsFocusable(true);
+			mFilmstripBottomControlsVisible = true;
+			return true;
+            } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+            		mCameraAppUI.setBottomControlsFocusable(false);
+			mFilmstripBottomControlsVisible = false;
+			return true;
             }
         }
         return super.onKeyUp(keyCode, event);

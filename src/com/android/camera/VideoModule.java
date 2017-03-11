@@ -343,7 +343,7 @@ public class VideoModule extends CameraModule
         mActivity.setPreviewStatusListener(mUI);
 
         SettingsManager settingsManager = mActivity.getSettingsManager();
-        mCameraId = settingsManager.getInteger(mAppController.getModuleScope(),
+        mCameraId = settingsManager.getInteger(SettingsManager.SCOPE_GLOBAL,
                                                Keys.KEY_CAMERA_ID);
 
         /*
@@ -361,7 +361,7 @@ public class VideoModule extends CameraModule
         mQuickCapture = mActivity.getIntent().getBooleanExtra(EXTRA_QUICK_CAPTURE, false);
         mLocationManager = mActivity.getLocationManager();
 
-        mUI.setOrientationIndicator(0, false);
+        //mUI.setOrientationIndicator(0, false);
         setDisplayOrientation();
 
         mPendingSwitchCameraId = -1;
@@ -871,6 +871,7 @@ public class VideoModule extends CameraModule
         // Change the camera display orientation
         if (mCameraDevice != null) {
             mCameraDevice.setDisplayOrientation(mDisplayRotation);
+            mUI.setOrientationIndicator(0, false);
         }
         if (mFocusManager != null) {
             mFocusManager.setDisplayOrientation(mCameraDisplayOrientation);
@@ -1178,6 +1179,8 @@ public class VideoModule extends CameraModule
                 Log.e(TAG, "Camera is facing unhandled direction");
             }
         }
+	android.util.Log.d("bunchen","setOrientationHint "+rotation);
+	rotation=180;
         mMediaRecorder.setOrientationHint(rotation);
 
         try {
@@ -1633,7 +1636,7 @@ public class VideoModule extends CameraModule
             mCameraSettings.setPreviewFrameRate(mProfile.videoFrameRate);
         }
 
-        enableTorchMode(Keys.isCameraBackFacing(settingsManager, mAppController.getModuleScope()));
+        enableTorchMode(Keys.isCameraBackFacing(settingsManager, SettingsManager.SCOPE_GLOBAL));
 
         // Set zoom.
         if (mCameraCapabilities.supports(CameraCapabilities.Feature.ZOOM)) {
@@ -1800,7 +1803,7 @@ public class VideoModule extends CameraModule
         Log.d(TAG, "Start to switch camera.");
         mCameraId = mPendingSwitchCameraId;
         mPendingSwitchCameraId = -1;
-        settingsManager.set(mAppController.getModuleScope(),
+        settingsManager.set(SettingsManager.SCOPE_GLOBAL,
                             Keys.KEY_CAMERA_ID, mCameraId);
 
         if (mFocusManager != null) {

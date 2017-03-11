@@ -423,7 +423,7 @@ public class PhotoModule
         mActivity.setPreviewStatusListener(mUI);
 
         SettingsManager settingsManager = mActivity.getSettingsManager();
-        mCameraId = settingsManager.getInteger(mAppController.getModuleScope(),
+        mCameraId = settingsManager.getInteger(SettingsManager.SCOPE_GLOBAL,
                                                Keys.KEY_CAMERA_ID);
 
         // TODO: Move this to SettingsManager as a part of upgrade procedure.
@@ -658,7 +658,7 @@ public class PhotoModule
         closeCamera();
         mCameraId = mPendingSwitchCameraId;
 
-        settingsManager.set(mAppController.getModuleScope(), Keys.KEY_CAMERA_ID, mCameraId);
+        settingsManager.set(SettingsManager.SCOPE_GLOBAL, Keys.KEY_CAMERA_ID, mCameraId);
         requestCameraOpen();
         mUI.clearFaces();
         if (mFocusManager != null) {
@@ -695,7 +695,7 @@ public class PhotoModule
                     // switch back to gcam, otherwise handle callback normally.
                     SettingsManager settingsManager = mActivity.getSettingsManager();
                     if (Keys.isCameraBackFacing(settingsManager,
-                                                mAppController.getModuleScope())) {
+                                                SettingsManager.SCOPE_GLOBAL)) {
                         if (Keys.requestsReturnToHdrPlus(settingsManager,
                                                          mAppController.getModuleScope())) {
                             switchToGcamCapture();
@@ -721,7 +721,7 @@ public class PhotoModule
                     SettingsManager settingsManager = mActivity.getSettingsManager();
                     if (GcamHelper.hasGcamAsSeparateModule()) {
                         // Set the camera setting to default backfacing.
-                        settingsManager.setToDefault(mAppController.getModuleScope(),
+                        settingsManager.setToDefault(SettingsManager.SCOPE_GLOBAL,
                                                      Keys.KEY_CAMERA_ID);
                         switchToGcamCapture();
                     } else {

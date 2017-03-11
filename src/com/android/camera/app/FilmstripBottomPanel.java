@@ -64,6 +64,13 @@ class FilmstripBottomPanel implements CameraAppUI.BottomPanel {
         setupDeleteButton();
         setupShareButton();
         setupProgressUi();
+	  setControlLayoutButtonFocusable(false);
+    }
+
+    public void setControlLayoutButtonFocusable(boolean bFocusable) {
+	  mEditButton.setFocusable(bFocusable);
+	  mShareButton.setFocusable(bFocusable);
+	  mDeleteButton.setFocusable(bFocusable);
     }
 
     @Override

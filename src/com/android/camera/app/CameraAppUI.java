@@ -1230,9 +1230,9 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
         mModeOptionsOverlay.setCaptureLayoutHelper(mCaptureLayoutHelper);
 
         mShutterButton = (ShutterButton) mCameraRootView.findViewById(R.id.shutter_button);
+        addShutterListener(this);
         addShutterListener(mController.getCurrentModuleController());
         addShutterListener(mModeOptionsOverlay);
-        addShutterListener(this);
 
         mGridLines = (GridLines) mCameraRootView.findViewById(R.id.grid_lines);
         mTextureViewHelper.addPreviewAreaSizeChangedListener(mGridLines);
@@ -1521,6 +1521,10 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
 
     public void hideBottomControls() {
         mFilmstripBottomControls.hide();
+    }
+
+    public void setBottomControlsFocusable(boolean bFocusable) {
+		mFilmstripBottomControls.setControlLayoutButtonFocusable(bFocusable);
     }
 
     /**
@@ -1908,7 +1912,7 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
         } else {
             if (hardwareSpec.isHdrPlusSupported()) {
                 if (bottomBarSpec.enableHdr && Keys.isCameraBackFacing(settingsManager,
-                                                                       mController.getModuleScope())) {
+                                                                        SettingsManager.SCOPE_GLOBAL)) {
                     buttonManager.initializeButton(ButtonManager.BUTTON_HDR_PLUS,
                             bottomBarSpec.hdrCallback);
                 } else {
@@ -1916,7 +1920,7 @@ public class CameraAppUI implements ModeListView.ModeSwitchListener,
                 }
             } else if (hardwareSpec.isHdrSupported()) {
                 if (bottomBarSpec.enableHdr && Keys.isCameraBackFacing(settingsManager,
-                                                                       mController.getModuleScope())) {
+                                                                       SettingsManager.SCOPE_GLOBAL)) {
                     buttonManager.initializeButton(ButtonManager.BUTTON_HDR,
                             bottomBarSpec.hdrCallback);
                 } else {
